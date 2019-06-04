@@ -99,58 +99,52 @@ var reloadCmd = &cobra.Command{
 			fmt.Println("警报通道配置出错")
 		}
 
-		var cpu_dashboard model.Dashboard
-		d3, err := ioutil.ReadFile("") //此处填包含CPU告警信息的dashboard.json
+		var alert_dashboard model.Dashboard
+		d3, err := ioutil.ReadFile("../conf/predashboards/general_view.json") //此处填包含CPU告警信息的dashboard.json
 		if err != nil {
 			fmt.Println(err)
 		}
-		err = json.Unmarshal(d3, &cpu_dashboard)
+		err = json.Unmarshal(d3, &alert_dashboard)
 		if err != nil {
 			fmt.Println(err)
 		}
 		cpu_threshold := viper1.Get("cpu_alert").(int)
+		men_threshold := viper1.Get("men_alert").(int)
+		disk_threshold := viper1.Get("disk_alert").(int)
 		if cpu_threshold == 0 {
 			fmt.Println("CPU报警阈值未被正确设置")
 		} else {
-			for i := 0; i < len(cpu_dashboard.Panels); i++ {
-				if cpu_dashboard.Panels[i].Title == "CPU使用率" {
-					cpu_dashboard.Panels[i].Alert.Conditions[0].Evaluator.Params = []int{cpu_threshold}
+			for i := 0; i < len(alert_dashboard.Panels); i++ {
+				if alert_dashboard.Panels[i].Title == "CPU使用率" {
+					alert_dashboard.Panels[i].Alert.Conditions[0].Evaluator.Params = []int{cpu_threshold}
 				}
 			}
 		}
-		data3, err := json.Marshal(&cpu_dashboard)
-		if err != nil {
-			fmt.Println(err)
-		}
-		err = ioutil.WriteFile("", data3, 0777) //此处填json相对路径及文件名
-		if err != nil {
-			fmt.Println(err)
-		}
-
-		var mem_dashboard model.Dashboard
-		d4, err := ioutil.ReadFile("") //此处填包含内存告警信息的dashboard.json
-		if err != nil {
-			fmt.Println(err)
-		}
-		err = json.Unmarshal(d4, &mem_dashboard)
-		if err != nil {
-			fmt.Println(err)
-		}
-		mem_threshold := viper1.Get("mem_alert").(int)
-		if mem_threshold == 0 {
+		if men_threshold == 0 {
 			fmt.Println("内存报警阈值未被正确设置")
 		} else {
-			for i := 0; i < len(cpu_dashboard.Panels); i++ {
-				if mem_dashboard.Panels[i].Title == "CPU使用率" {
-					mem_dashboard.Panels[i].Alert.Conditions[0].Evaluator.Params = []int{mem_threshold}
+			for i := 0; i < len(alert_dashboard.Panels); i++ {
+				if alert_dashboard.Panels[i].Title == "内存使用率" {
+					alert_dashboard.Panels[i].Alert.Conditions[0].Evaluator.Params = []int{men_threshold}
 				}
 			}
 		}
-		data4, err := json.Marshal(&mem_dashboard)
+
+		if disk_threshold == 0 {
+			fmt.Println("磁盘报警阈值未被正确设置")
+		} else {
+			for i := 0; i < len(alert_dashboard.Panels); i++ {
+				if alert_dashboard.Panels[i].Title == "磁盘使用率" {
+					alert_dashboard.Panels[i].Alert.Conditions[0].Evaluator.Params = []int{disk_threshold}
+				}
+			}
+		}
+
+		data3, err := json.Marshal(&alert_dashboard)
 		if err != nil {
 			fmt.Println(err)
 		}
-		err = ioutil.WriteFile("", data4, 0777) //此处填json相对路径及文件名
+		err = ioutil.WriteFile("../conf/predashboards/general_view.json", data3, 0777) //此处填json相对路径及文件名
 		if err != nil {
 			fmt.Println(err)
 		}
