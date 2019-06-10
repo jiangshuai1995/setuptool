@@ -20,14 +20,17 @@ var startCmd = &cobra.Command{
 	Use:   "start",
 	Short: "Start Services",
 	Run: func(cmd *cobra.Command, args []string) {
-		//command:=exec.Command("./grafana")
-		command := exec.Command("monitor")
-
-		err := command.Start()
+		command1:=exec.Command("./grafana-server","--pidfile=./grafana-server.pid")
+		command2:= exec.Command("./statichtml")
+		err := command1.Start()
 		if err != nil {
 			fmt.Println(err)
 		}
-		var id = command.Process.Pid
+		err = command2.Start()
+		if err != nil {
+			fmt.Println(err)
+		}
+		var id = command2.Process.Pid
 		data := []byte(strconv.Itoa(id))
 		err = ioutil.WriteFile("1.lock", data, 0777)
 		if err != nil {

@@ -21,20 +21,39 @@ var stopCmd = &cobra.Command{
 	Use:   "stop",
 	Short: "Stop Services",
 	Run: func(cmd *cobra.Command, args []string) {
-		d, err := ioutil.ReadFile("1.lock")
+		d1, err := ioutil.ReadFile("1.lock")
 		if err != nil {
 			fmt.Println(err)
 		} else {
-			var id = string(d)
+			var id = string(d1)
 			//command:=exec.Command("tskill",id)  //windows
-			command := exec.Command("kill", "-9", id) //linux
-			err = command.Start()
+			command1 := exec.Command("kill", "-9", id) //linux
+			err = command1.Start()
 			if err != nil {
-				fmt.Println("Unable to kill the process")
+				fmt.Println("Unable to kill the font process")
 			} else {
 				del := os.Remove("1.lock")
 				if del != nil {
 					fmt.Println("Unable to delete .lock file")
+				}
+
+			}
+
+		}
+		d2, err := ioutil.ReadFile("grafana-server.pid")
+		if err != nil {
+			fmt.Println(err)
+		} else {
+			var id = string(d2)
+			//command:=exec.Command("tskill",id)  //windows
+			command2 := exec.Command("kill", "-9", id) //linux
+			err = command2.Start()
+			if err != nil {
+				fmt.Println("Unable to kill the server process")
+			} else {
+				del := os.Remove("grafana-server.pid")
+				if del != nil {
+					fmt.Println("Unable to delete .pid file")
 				}
 
 			}
