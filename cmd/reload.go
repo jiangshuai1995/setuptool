@@ -99,55 +99,53 @@ var reloadCmd = &cobra.Command{
 			fmt.Println("警报通道配置出错")
 		}
 
-		var alert_dashboard model.Dashboard
-		d3, err := ioutil.ReadFile("../conf/predashboards/general_view.json") //此处填包含CPU告警信息的dashboard.json
-		if err != nil {
-			fmt.Println(err)
-		}
-		err = json.Unmarshal(d3, &alert_dashboard)
-		if err != nil {
-			fmt.Println(err)
-		}
-		cpu_threshold := viper1.Get("cpu_alert").(int)
-		men_threshold := viper1.Get("men_alert").(int)
-		disk_threshold := viper1.Get("disk_alert").(int)
-		if cpu_threshold == 0 {
-			fmt.Println("CPU报警阈值未被正确设置")
-		} else {
-			for i := 0; i < len(alert_dashboard.Panels); i++ {
-				if alert_dashboard.Panels[i].Title == "CPU使用率" {
-					alert_dashboard.Panels[i].Alert.Conditions[0].Evaluator.Params = []int{cpu_threshold}
+		cpu_alert:=viper1.GetInt("cpu_alert")
+		mem_alert:=viper1.GetInt("mem_alert")
+		disk_alert:=viper1.GetInt("disk_alert")
+		bytevalue,err:=ioutil.ReadFile("../conf/predashboards/general_view.json")
+		var result map[string]interface{}
+		err =json.Unmarshal(bytevalue,&result)
+		panels:=result["panels"].([]interface{})
+		for _ ,panel:=range panels{
+			m:=panel.(map[string]interface{})
+			if alert,exists:=m["alert"];exists{
+				if m["title"]=="CPU使用率"{
+					a:=alert.(map[string]interface{})
+					conds:=a["conditions"].([]interface{})
+					c:=conds[0].(map[string]interface{})
+					e:=c["evaluator"].(map[string](interface{}))
+					e["params"]=[]int{cpu_alert} //修改params
+					ts:=m["thresholds"].([]interface{})
+					t:=ts[0].(map[string]interface{})
+					t["value"]=cpu_alert //修改thresholds
+					fmt.Printf("cpu告警阈值已修改为 %d",cpu_alert)
+				}else if m["title"]=="内存使用率"{
+					a:=alert.(map[string]interface{})
+					conds:=a["conditions"].([]interface{})
+					c:=conds[0].(map[string]interface{})
+					e:=c["evaluator"].(map[string](interface{}))
+					e["params"]=[]int{mem_alert}
+					ts:=m["thresholds"].([]interface{})
+					t:=ts[0].(map[string]interface{})
+					t["value"]=mem_alert
+					fmt.Printf("内存告警阈值已修改为 %d",mem_alert)
+				}else if m["title"]=="磁盘使用率"{
+					a:=alert.(map[string]interface{})
+					conds:=a["conditions"].([]interface{})
+					c:=conds[0].(map[string]interface{})
+					e:=c["evaluator"].(map[string](interface{}))
+					e["params"]=[]int{disk_alert}
+					ts:=m["thresholds"].([]interface{})
+					t:=ts[0].(map[string]interface{})
+					t["value"]=disk_alert
+					fmt.Printf("磁盘告警阈值已修改为 %d",disk_alert)
 				}
 			}
-		}
-		if men_threshold == 0 {
-			fmt.Println("内存报警阈值未被正确设置")
-		} else {
-			for i := 0; i < len(alert_dashboard.Panels); i++ {
-				if alert_dashboard.Panels[i].Title == "内存使用率" {
-					alert_dashboard.Panels[i].Alert.Conditions[0].Evaluator.Params = []int{men_threshold}
-				}
-			}
-		}
 
-		if disk_threshold == 0 {
-			fmt.Println("磁盘报警阈值未被正确设置")
-		} else {
-			for i := 0; i < len(alert_dashboard.Panels); i++ {
-				if alert_dashboard.Panels[i].Title == "磁盘使用率" {
-					alert_dashboard.Panels[i].Alert.Conditions[0].Evaluator.Params = []int{disk_threshold}
-				}
-			}
 		}
+		bytevalue2,err:=json.MarshalIndent(result," "," ") //注意修改encode.go文件 escapeHTML: false 不然会出现特殊字符的转义问题
+		err=ioutil.WriteFile("../conf/predashboards/general_view.json",bytevalue2,0777)
 
-		data3, err := json.Marshal(&alert_dashboard)
-		if err != nil {
-			fmt.Println(err)
-		}
-		err = ioutil.WriteFile("../conf/predashboards/general_view.json", data3, 0777) //此处填json相对路径及文件名
-		if err != nil {
-			fmt.Println(err)
-		}
 
 		fmt.Println("reload called")
 	},
@@ -156,3 +154,4 @@ var reloadCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(reloadCmd)
 }
+
