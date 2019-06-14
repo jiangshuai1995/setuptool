@@ -20,8 +20,8 @@ var startCmd = &cobra.Command{
 	Use:   "start",
 	Short: "Start Services",
 	Run: func(cmd *cobra.Command, args []string) {
-		command1:=exec.Command("./grafana-server","--pidfile=./grafana-server.pid")
-		command2:= exec.Command("./statichtml")
+		command1:=exec.Command("grafana-server.exe","--pidfile=./grafana-server.pid")
+		command2:= exec.Command("statichtml.exe")
 		err := command1.Start()
 		if err != nil {
 			fmt.Println(err)

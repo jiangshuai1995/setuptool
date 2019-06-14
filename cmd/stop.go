@@ -26,8 +26,8 @@ var stopCmd = &cobra.Command{
 			fmt.Println(err)
 		} else {
 			var id = string(d1)
-			//command:=exec.Command("tskill",id)  //windows
-			command1 := exec.Command("kill", "-9", id) //linux
+			command1:=exec.Command("tskill",id)  //windows
+			//command1 := exec.Command("kill", "-9", id) //linux
 			err = command1.Start()
 			if err != nil {
 				fmt.Println("Unable to kill the font process")
@@ -45,8 +45,8 @@ var stopCmd = &cobra.Command{
 			fmt.Println(err)
 		} else {
 			var id = string(d2)
-			//command:=exec.Command("tskill",id)  //windows
-			command2 := exec.Command("kill", "-9", id) //linux
+			command2:=exec.Command("tskill",id)  //windows
+			//command2 := exec.Command("kill", "-9", id) //linux
 			err = command2.Start()
 			if err != nil {
 				fmt.Println("Unable to kill the server process")
