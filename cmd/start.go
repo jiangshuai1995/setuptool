@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"io/ioutil"
+	"os"
 	"os/exec"
 	"strconv"
 )
@@ -22,6 +23,10 @@ var startCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		command1:=exec.Command("./grafana-server","--pidfile=./grafana-server.pid")
 		command2:= exec.Command("./statichtml")
+		if Exists("./grafana-server.pid")||Exists("./1.lock"){
+			fmt.Println("请检查服务是否已经启动")
+			return
+		}
 		err := command1.Start()
 		if err != nil {
 			fmt.Println(err)
@@ -42,4 +47,15 @@ var startCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(startCmd)
+}
+
+func Exists(file string) bool{
+	_,err:=os.Stat(file)
+	if err!=nil {
+		if os.IsExist(err) {
+			return  true
+		}
+		return false
+	}
+	return true
 }
