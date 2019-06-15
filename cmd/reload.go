@@ -138,7 +138,7 @@ var reloadCmd = &cobra.Command{
 					ts:=m["thresholds"].([]interface{})
 					t:=ts[0].(map[string]interface{})
 					t["value"]=disk_alert
-					fmt.Printf("磁盘告警阈值已修改为 %d",disk_alert)
+					fmt.Printf("磁盘告警阈值已修改为 %d \n",disk_alert)
 				}
 			}
 
