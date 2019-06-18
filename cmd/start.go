@@ -42,6 +42,7 @@ var startCmd = &cobra.Command{
 			fmt.Println(err)
 		}
 		fmt.Println(id)
+		fmt.Println("start called")
 	},
 }
 
