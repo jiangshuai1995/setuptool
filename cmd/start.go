@@ -21,15 +21,15 @@ var startCmd = &cobra.Command{
 	Use:   "start",
 	Short: "Start Services",
 	Run: func(cmd *cobra.Command, args []string) {
-		command1:=exec.Command("grafana-server.exe","--pidfile=./grafana-server.pid")
-		command2:= exec.Command("statichtml.exe")
-		if Exists("./grafana-server.pid")||Exists("./1.lock"){
+		command1 := exec.Command("grafana-server.exe", "--pidfile=./grafana-server.pid")
+		command2 := exec.Command("statichtml.exe")
+		if Exists("./grafana-server.pid") || Exists("./1.lock") {
 			fmt.Println("请检查服务是否已经启动")
 			return
 		}
 		err := command1.Start()
 		if err != nil {
- 			fmt.Println(err)
+			fmt.Println(err)
 		}
 		err = command2.Start()
 		if err != nil {
@@ -50,11 +50,11 @@ func init() {
 	rootCmd.AddCommand(startCmd)
 }
 
-func Exists(file string) bool{
-	_,err:=os.Stat(file)
-	if err!=nil {
+func Exists(file string) bool {
+	_, err := os.Stat(file)
+	if err != nil {
 		if os.IsExist(err) {
-			return  true
+			return true
 		}
 		return false
 	}

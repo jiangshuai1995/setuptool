@@ -26,7 +26,7 @@ var stopCmd = &cobra.Command{
 			fmt.Println(err)
 		} else {
 			var id = string(d1)
-			command1:=exec.Command("tskill",id)  //windows
+			command1 := exec.Command("tskill", id) //windows
 			//command1 := exec.Command("kill", "-9", id) //linux
 			err = command1.Start()
 			if err != nil {
@@ -45,7 +45,7 @@ var stopCmd = &cobra.Command{
 			fmt.Println(err)
 		} else {
 			var id = string(d2)
-			command2:=exec.Command("tskill",id)  //windows
+			command2 := exec.Command("tskill", id) //windows
 			//command2 := exec.Command("kill", "-9", id) //linux
 			err = command2.Start()
 			if err != nil {

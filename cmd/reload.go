@@ -32,7 +32,7 @@ var reloadCmd = &cobra.Command{
 		}
 
 		IP := viper1.GetString("local_IP")
-		if  IP!="" {
+		if IP != "" {
 			modify_html(IP)
 		}
 
@@ -106,53 +106,52 @@ var reloadCmd = &cobra.Command{
 			fmt.Println("警报通道配置出错")
 		}
 
-		cpu_alert:=viper1.GetInt("cpu_alert")
-		mem_alert:=viper1.GetInt("mem_alert")
-		disk_alert:=viper1.GetInt("disk_alert")
-		bytevalue,err:=ioutil.ReadFile("../conf/predashboards/general_view.json")
+		cpu_alert := viper1.GetInt("cpu_alert")
+		mem_alert := viper1.GetInt("mem_alert")
+		disk_alert := viper1.GetInt("disk_alert")
+		bytevalue, err := ioutil.ReadFile("../conf/predashboards/general_view.json")
 		var result map[string]interface{}
-		err =json.Unmarshal(bytevalue,&result)
-		panels:=result["panels"].([]interface{})
-		for _ ,panel:=range panels{
-			m:=panel.(map[string]interface{})
-			if alert,exists:=m["alert"];exists{
-				if m["title"]=="CPU使用率"{
-					a:=alert.(map[string]interface{})
-					conds:=a["conditions"].([]interface{})
-					c:=conds[0].(map[string]interface{})
-					e:=c["evaluator"].(map[string](interface{}))
-					e["params"]=[]int{cpu_alert} //修改params
-					ts:=m["thresholds"].([]interface{})
-					t:=ts[0].(map[string]interface{})
-					t["value"]=cpu_alert //修改thresholds
-					fmt.Printf("cpu告警阈值已修改为 %d",cpu_alert)
-				}else if m["title"]=="内存使用率"{
-					a:=alert.(map[string]interface{})
-					conds:=a["conditions"].([]interface{})
-					c:=conds[0].(map[string]interface{})
-					e:=c["evaluator"].(map[string](interface{}))
-					e["params"]=[]int{mem_alert}
-					ts:=m["thresholds"].([]interface{})
-					t:=ts[0].(map[string]interface{})
-					t["value"]=mem_alert
-					fmt.Printf("内存告警阈值已修改为 %d",mem_alert)
-				}else if m["title"]=="磁盘使用率"{
-					a:=alert.(map[string]interface{})
-					conds:=a["conditions"].([]interface{})
-					c:=conds[0].(map[string]interface{})
-					e:=c["evaluator"].(map[string](interface{}))
-					e["params"]=[]int{disk_alert}
-					ts:=m["thresholds"].([]interface{})
-					t:=ts[0].(map[string]interface{})
-					t["value"]=disk_alert
-					fmt.Printf("磁盘告警阈值已修改为 %d \n",disk_alert)
+		err = json.Unmarshal(bytevalue, &result)
+		panels := result["panels"].([]interface{})
+		for _, panel := range panels {
+			m := panel.(map[string]interface{})
+			if alert, exists := m["alert"]; exists {
+				if m["title"] == "CPU使用率" {
+					a := alert.(map[string]interface{})
+					conds := a["conditions"].([]interface{})
+					c := conds[0].(map[string]interface{})
+					e := c["evaluator"].(map[string](interface{}))
+					e["params"] = []int{cpu_alert} //修改params
+					ts := m["thresholds"].([]interface{})
+					t := ts[0].(map[string]interface{})
+					t["value"] = cpu_alert //修改thresholds
+					fmt.Printf("cpu告警阈值已修改为 %d", cpu_alert)
+				} else if m["title"] == "内存使用率" {
+					a := alert.(map[string]interface{})
+					conds := a["conditions"].([]interface{})
+					c := conds[0].(map[string]interface{})
+					e := c["evaluator"].(map[string](interface{}))
+					e["params"] = []int{mem_alert}
+					ts := m["thresholds"].([]interface{})
+					t := ts[0].(map[string]interface{})
+					t["value"] = mem_alert
+					fmt.Printf("内存告警阈值已修改为 %d", mem_alert)
+				} else if m["title"] == "磁盘使用率" {
+					a := alert.(map[string]interface{})
+					conds := a["conditions"].([]interface{})
+					c := conds[0].(map[string]interface{})
+					e := c["evaluator"].(map[string](interface{}))
+					e["params"] = []int{disk_alert}
+					ts := m["thresholds"].([]interface{})
+					t := ts[0].(map[string]interface{})
+					t["value"] = disk_alert
+					fmt.Printf("磁盘告警阈值已修改为 %d \n", disk_alert)
 				}
 			}
 
 		}
-		bytevalue2,err:=json.MarshalIndent(result," "," ") //注意修改encode.go文件 escapeHTML: false 不然会出现特殊字符的转义问题
-		err=ioutil.WriteFile("../conf/predashboards/general_view.json",bytevalue2,0777)
-
+		bytevalue2, err := json.MarshalIndent(result, " ", " ") //注意修改encode.go文件 escapeHTML: false 不然会出现特殊字符的转义问题
+		err = ioutil.WriteFile("../conf/predashboards/general_view.json", bytevalue2, 0777)
 
 		fmt.Println("reload called")
 	},
@@ -162,9 +161,9 @@ func init() {
 	rootCmd.AddCommand(reloadCmd)
 }
 
-func modify_html(ip string){
+func modify_html(ip string) {
 
-	html_list:=[...]string{
+	html_list := [...]string{
 
 		"./public/alarminfo-page.html",
 		"./public/clusterinfo-page.html",
@@ -172,14 +171,14 @@ func modify_html(ip string){
 		"./public/historyinfo-page.html",
 		"./public/hostinfo-page.html",
 	}
-	for _,html:=range html_list{
-		data,err:=ioutil.ReadFile(html)
-		if err!=nil{
+	for _, html := range html_list {
+		data, err := ioutil.ReadFile(html)
+		if err != nil {
 			fmt.Println(err)
 		}
-		reg:=regexp.MustCompile("((1[0-9][0-9]\\.)|(2[0-4][0-9]\\.)|(25[0-5]\\.)|([1-9][0-9]\\.)|([0-9])\\.){3}((1[0-9][0-9])|(2[0-4][0-9])|(25[0-5])|([1-9][0-9])|([0-9]))")
-		result:=reg.ReplaceAllString(string(data),ip)
-		err=ioutil.WriteFile(html,[]byte(result),0777)
+		reg := regexp.MustCompile("((1[0-9][0-9]\\.)|(2[0-4][0-9]\\.)|(25[0-5]\\.)|([1-9][0-9]\\.)|([0-9])\\.){3}((1[0-9][0-9])|(2[0-4][0-9])|(25[0-5])|([1-9][0-9])|([0-9]))")
+		result := reg.ReplaceAllString(string(data), ip)
+		err = ioutil.WriteFile(html, []byte(result), 0777)
 	}
 
 }
