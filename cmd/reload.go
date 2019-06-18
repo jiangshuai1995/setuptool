@@ -14,6 +14,7 @@ import (
 	"github.com/spf13/viper"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
+	"regexp"
 )
 
 // reloadCmd represents the reload command
@@ -29,6 +30,12 @@ var reloadCmd = &cobra.Command{
 		if err != nil {
 			fmt.Println(err)
 		}
+
+		IP := viper1.GetString("local_IP")
+		if  IP!="" {
+			modify_html(IP)
+		}
+
 		//var DB_CONF model.Db_conf
 		host := viper1.GetString("database_host")
 		port := viper1.GetString("database_port")
@@ -155,3 +162,24 @@ func init() {
 	rootCmd.AddCommand(reloadCmd)
 }
 
+func modify_html(ip string){
+
+	html_list:=[...]string{
+
+		"./public/alarminfo-page.html",
+		"./public/clusterinfo-page.html",
+		"./public/overview-page.html",
+		"./public/historyinfo-page.html",
+		"./public/hostinfo-page.html",
+	}
+	for _,html:=range html_list{
+		data,err:=ioutil.ReadFile(html)
+		if err!=nil{
+			fmt.Println(err)
+		}
+		reg:=regexp.MustCompile("((1[0-9][0-9]\\.)|(2[0-4][0-9]\\.)|(25[0-5]\\.)|([1-9][0-9]\\.)|([0-9])\\.){3}((1[0-9][0-9])|(2[0-4][0-9])|(25[0-5])|([1-9][0-9])|([0-9]))")
+		result:=reg.ReplaceAllString(string(data),ip)
+		err=ioutil.WriteFile(html,[]byte(result),0777)
+	}
+
+}
